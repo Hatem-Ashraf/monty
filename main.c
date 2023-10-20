@@ -60,6 +60,75 @@ void pop(stack_t **stack, unsigned int line_number) {
     free(temp);
 }
 
+void swap(stack_t **stack, unsigned int line_number) {
+    int temp;
+    if (!stack || !(*stack) || !((*stack)->next)) {
+        printf("L%d: can't swap, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+    temp = (*stack)->n;
+    (*stack)->n = (*stack)->next->n;
+    (*stack)->next->n = temp;
+}
+void nop(stack_t **stack, unsigned int line_number) {
+    (void)stack;
+    (void)line_number;
+}
+
+void mul(stack_t **stack, unsigned int line_number) {
+    if (!(*stack) || !((*stack)->next)) {
+        printf("L%d: can't mul, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+    (*stack)->next->n *= (*stack)->n;
+    pop(stack, line_number);
+}
+
+void mod(stack_t **stack, unsigned int line_number) {
+    if (!(*stack) || !((*stack)->next)) {
+        printf("L%d: can't mod, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+    if ((*stack)->n == 0) {
+        printf("L%d: division by zero\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+    (*stack)->next->n %= (*stack)->n;
+    pop(stack, line_number);
+}
+
+
+void div_op(stack_t **stack, unsigned int line_number) {
+    if (!(*stack) || !((*stack)->next)) {
+        printf("L%d: can't div, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+    if ((*stack)->n == 0) {
+        printf("L%d: division by zero\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+    (*stack)->next->n /= (*stack)->n;
+    pop(stack, line_number);
+}
+
+void sub(stack_t **stack, unsigned int line_number) {
+    if (!(*stack) || !((*stack)->next)) {
+        printf("L%d: can't sub, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+    (*stack)->next->n -= (*stack)->n;
+    pop(stack, line_number);
+}
+
+
+void add(stack_t **stack, unsigned int line_number) {
+    if (!(*stack) || !((*stack)->next)) {
+        printf("L%d: can't add, stack too short\n", line_number);
+        exit(EXIT_FAILURE);
+    }
+    (*stack)->next->n += (*stack)->n;
+    pop(stack, line_number);
+}
 
 void free_stack(stack_t *stack) {
     stack_t *temp;
@@ -106,6 +175,20 @@ int main(int argc, char **argv) {
             pint(&head, line_number);
         } else if (strcmp(opcode, "pop") == 0) {
             pop(&head, line_number);
+        } else if (strcmp(opcode, "swap") == 0) {
+            swap(&head, line_number);
+        } else if (strcmp(opcode, "add") == 0) {
+            add(&head, line_number);
+        } else if (strcmp(opcode, "nop") == 0) {
+            nop(&head, line_number);
+        } else if (strcmp(opcode, "sub") == 0) {
+            sub(&head, line_number);
+        } else if (strcmp(opcode, "div") == 0) {
+            div_op(&head, line_number);
+        } else if (strcmp(opcode, "mul") == 0) {
+            mul(&head, line_number);
+        } else if (strcmp(opcode, "mod") == 0) {
+            mod(&head, line_number);
         } else {
             printf("L%d: unknown instruction %s\n", line_number, opcode);
             exit(EXIT_FAILURE);
